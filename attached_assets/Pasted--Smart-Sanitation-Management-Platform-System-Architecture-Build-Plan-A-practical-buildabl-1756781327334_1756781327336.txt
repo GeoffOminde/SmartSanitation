@@ -1,0 +1,282 @@
+# Smart Sanitation Management Platform — System Architecture & Build Plan
+
+> A practical, buildable blueprint for an AI-powered mobile-toilet fleet management SaaS targeting East Africa. Includes MVP scope, system architecture, data models, API surface, IoT specs, AI/ML components, monetization, 6–12 month roadmap, and a handoff pack for developers.
+
+---
+
+## 1. Executive summary
+
+Build a cloud-native, multi-tenant SaaS platform that combines IoT telemetry, route optimization, dynamic pricing, mobile-money payments, and operator/customer apps. Revenue comes from subscriptions (per unit/fleet), transaction fees, premium analytics, and optional hardware bundles.
+
+Target markets: Kenya, Uganda, Tanzania — starting with Nairobi and major event/construction hubs.
+
+Primary KPIs: Reduction in emergency servicing, increase in utilization rate, net revenue per unit, churn, ARPU.
+
+---
+
+## 2. MVP (Months 1–3) — Scope & rationale
+
+**Goal:** Launch a minimal product that proves value for operators and reduces operating costs.
+
+### Core MVP features
+
+* Device onboarding & telemetry ingestion (fill level + GPS + door counter).
+* Operator web dashboard: fleet map, live fill levels, unit status, basic alerts.
+* Simple route planner: generate daily route list using current fill levels and locations.
+* Customer booking portal (web + simple mobile friendly page) with M-Pesa checkout.
+* User & role management for operators and field staff.
+* Basic analytics: utilization, trips, revenue summary.
+
+### Excluded from MVP (Phase 1)
+
+* Dynamic pricing engine (simple fixed pricing initially).
+* Advanced predictive maintenance models (heuristic rules instead).
+* Full CRM automation & multi-tenant billing.
+
+---
+
+## 3. System architecture (concise)
+
+Layers:
+
+1. IoT/Edge (LoRaWAN/4G sensors, local gateway)
+2. Ingestion API (MQTT + HTTPS)
+3. Time-series DB (TimescaleDB on PostgreSQL)
+4. Event queue (Kafka/RabbitMQ)
+5. AI/Processing services (Python microservices)
+6. Backend API (FastAPI/Django)
+7. Frontend apps (React admin; Flutter mobile)
+8. Integrations (M-Pesa Daraja, Airtel, Twilio/WhatsApp)
+9. Cloud infra (AWS/Azure/GCP with IaC)
+
+Security: TLS, OAuth2/JWT, RBAC, logging & audit.
+
+---
+
+## 4. Tech stack (recommended)
+
+* **IoT Hardware:** LoRaWAN fill sensors, GPS tracker (4G fallback), reed-switch door counters, basic AQ sensors.
+* **Backend:** Python (FastAPI) + Celery for background jobs.
+* **Realtime / Ingestion:** MQTT broker (EMQX), HTTPS ingest endpoints.
+* **Database:** PostgreSQL + TimescaleDB.
+* **Queue:** RabbitMQ or Kafka.
+* **Frontend:** React (operator dashboard), Flutter (field app & customer app optional).
+* **AI/ML:** scikit-learn for initial models; TensorFlow Lite for edge/embedded models.
+* **Cloud:** AWS (IoT Core), S3, ECS/EKS or Azure IoT Hub.
+* **Payments:** M-Pesa Daraja API.
+* **Monitoring:** Prometheus + Grafana.
+
+---
+
+## 5. Data model (essential tables)
+
+### `units`
+
+* id (uuid)
+* operator\_id
+* serial\_no
+* model
+* install\_date
+* status (active/idle/maintenance)
+* last\_seen\_at
+* latitude, longitude
+
+### `telemetry` (time-series / Timescale hypertable)
+
+* id
+* unit\_id
+* timestamp
+* fill\_level\_pct
+* door\_open\_count
+* odometer / gps\_speed
+* battery\_voltage
+* temp, air\_quality
+
+### `bookings`
+
+* id
+* customer\_id
+* unit\_id (nullable)
+* start\_date, end\_date
+* price, payment\_status, payment\_ref
+* ticket\_status
+
+### `operators`, `field_staff`, `transactions`, `maintenance_logs`
+
+Include indexes on unit\_id + timestamp for telemetry.
+
+---
+
+## 6. API surface (selected endpoints)
+
+**Auth**
+
+* `POST /api/v1/auth/login` → JWT
+* `POST /api/v1/auth/refresh`
+
+**Units & Telemetry**
+
+* `POST /api/v1/devices/{device_id}/telemetry` → ingest
+* `GET /api/v1/units` → list units (filter by status)
+* `GET /api/v1/units/{id}/telemetry?from=&to=` → timeseries
+
+**Routing**
+
+* `POST /api/v1/routes/daily` → generate day's route (input: depot, available units, time window)
+* `GET /api/v1/routes/{id}` → route details
+
+**Bookings & Payments**
+
+* `POST /api/v1/bookings` → create booking (returns payment request)
+* `POST /api/v1/payments/mpesa/callback` → M-Pesa callback handler
+
+**Admin & Reports**
+
+* `GET /api/v1/reports/utilization?from=&to=` → CSV/JSON
+
+---
+
+## 7. AI & ML components (Phase 2–3)
+
+### Predictive maintenance
+
+* Data: telemetry, maintenance\_logs, mileage, age
+* Model: survival analysis / gradient boosting (XGBoost) to predict failure window
+* Output: RAG score (Now, 1–7 days, >7 days)
+
+### Route optimization
+
+* Start with Google Maps Directions API + TSP heuristic (OR-Tools) for MVP; move to capacitated VRP with time windows later.
+
+### Dynamic pricing
+
+* Features: location demand, day-of-week, nearby events, utilization
+* Model: time-series + regression; initial rules engine then ML.
+
+### Fraud detection
+
+* Real-time transaction features, velocity checks, device-location vs transaction location, anomaly detection with isolation forest.
+
+---
+
+## 8. IoT spec & deployment notes
+
+* Sensors: battery life target 6–12 months. Use sleep cycles + uplink on change threshold.
+* Connectivity: primary LoRaWAN; fallback GSM 2G/4G.
+* Edge gateway: buffer data when offline; OTA firmware updates.
+* Secure pairing: per-device keys, mutual TLS for gateway-cloud.
+
+---
+
+## 9. UX / wireframes (high level)
+
+### Operator Dashboard
+
+* Map + cluster view
+* Fleet health panel (alerts, low-battery, urgent fills)
+* Today's routes & technician assignments
+* Bookings calendar & revenue snapshot
+
+### Field App (mobile)
+
+* My route for the day + navigation
+* Check-in/out, photo proof, checklist
+* Report maintenance, order parts
+
+### Customer Booking Flow
+
+* Search by date/location
+* Dynamic price shown (or fixed for MVP)
+* Checkout via M-Pesa
+* Booking confirmation & ETA
+
+---
+
+## 10. Monetization & pricing strategy
+
+* **Starter plan:** \$X per unit/month (e.g., \$3–5) — basic telemetry + dashboard.
+* **Pro plan:** \$Y per unit/month — routing, booking portal, M-Pesa integration.
+* **Enterprise:** custom (CRM integrations, SLAs).
+* **Transaction fee:** 1–3% per booking processed.
+* **Hardware kit:** sell at margin or rent-to-own model.
+
+Include onboarding fee for larger fleets.
+
+---
+
+## 11. 6–12 month roadmap (milestones)
+
+**Months 1–3 (MVP)**
+
+* Hardware procurement
+* Backend + ingestion API
+* Operator dashboard (map + alerts)
+* Basic route planner
+* Booking portal + M-Pesa integration
+
+**Months 3–5 (Payments & CRM)**
+
+* Customer DB, invoicing
+* WhatsApp/Twilio notifications
+* Basic lead capture & campaigns
+
+**Months 5–8 (AI optimization)**
+
+* Predictive maintenance model
+* Dynamic pricing pilot
+* Route optimization upgrade (VRP)
+
+**Months 8–12 (Scale & monetization)**
+
+* Multi-tenant SaaS features
+* Analytics upsell (benchmarks)
+* Marketplace partnerships (events, construction)
+
+---
+
+## 12. Estimated budget (rough)
+
+* MVP dev (3 months): 2–3 backend devs, 1 frontend, 1 devops → USD 45k–80k (depending on rates)
+* IoT hardware pilot (50 units): USD 6k–15k
+* Cloud infra & misc (first year): USD 3k–8k
+* Marketing & ops (pilot): USD 5k–15k
+
+*These are indicative. I can refine given your target country, team model, and unit volumes.*
+
+---
+
+## 13. ROI drivers & metrics to track
+
+* Trips avoided per month (cost saved)
+* Increase in utilization rate (%)
+* ARPU per unit
+* Customer acquisition cost (CAC)
+* Churn & retention
+* Fraud rate reduction
+
+---
+
+## 14. Deliverables for a developer handoff
+
+* README + architecture diagram (SVG)
+* OpenAPI (Swagger) spec for all endpoints
+* DB schema SQL + example seed data
+* Terraform / CloudFormation templates (IaC)
+* Wireframe images or Figma links
+* Test dataset & telemetry simulator
+* Postman collection & deployment guide
+
+---
+
+## 15. Immediate next steps (what I can do now for you)
+
+1. Produce a one-page pitch / investor concept note.
+2. Generate an OpenAPI skeleton for the APIs above.
+3. Create SQL schema & seed data for PostgreSQL/TimescaleDB.
+4. Mock up the operator dashboard wireframe (React component or Figma-ready HTML).
+
+Tell me which of these to start and I’ll produce it right away.
+
+---
+
+*Prepared by your AI product partner — concise, developer-ready, and tailored to East African realities.*
