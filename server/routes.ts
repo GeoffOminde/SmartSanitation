@@ -134,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Unit not found" });
       }
 
-      let telemetryHistory = [];
+      let telemetryHistory: any[] = [];
       if (from && to) {
         telemetryHistory = await storage.getTelemetryHistory(
           id, 

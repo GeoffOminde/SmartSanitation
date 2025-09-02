@@ -37,7 +37,7 @@ Preferred communication style: Simple, everyday language.
 - **Field Staff Management**: Different permission levels for operators and field workers
 
 ### Integration Architecture
-- **Payment Processing**: M-Pesa Daraja API integration for mobile money payments
+- **Payment Processing**: InstaSend API integration for M-Pesa STK Push payments in East Africa
 - **IoT Connectivity**: MQTT/HTTPS endpoints for device telemetry ingestion
 - **Communication**: SMS/WhatsApp notifications via Twilio
 - **Maps Integration**: Prepared for mapping services integration
@@ -50,8 +50,8 @@ Preferred communication style: Simple, everyday language.
 - **WebSocket**: Native WebSocket implementation for real-time features
 
 ### Payment Systems
-- **Stripe**: Payment processing infrastructure (React Stripe.js integration)
-- **M-Pesa**: Mobile money integration for East African markets
+- **InstaSend**: Primary payment gateway for M-Pesa integration in East Africa (STK Push, webhook handling)
+- **M-Pesa**: Mobile money integration via InstaSend API for Kenya, Uganda, Tanzania markets
 
 ### Development & Deployment
 - **Neon Database**: Serverless PostgreSQL hosting

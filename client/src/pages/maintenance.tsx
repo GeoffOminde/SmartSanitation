@@ -389,9 +389,9 @@ export default function MaintenancePage() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
                             <h3 className="font-medium text-foreground">{log.maintenanceType}</h3>
-                            <Badge className={getStatusColor(log.status)}>
-                              {getStatusIcon(log.status)}
-                              {log.status.replace('_', ' ')}
+                            <Badge className={getStatusColor(log.status || 'scheduled')}>
+                              {getStatusIcon(log.status || 'scheduled')}
+                              {(log.status || 'scheduled').replace('_', ' ')}
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">

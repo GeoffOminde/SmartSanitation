@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopNavbar } from "./TopNavbar";
-import { MobileNav } from "./MobileNav";
+import { MobileNav } from "@/components/MobileNav";
 
 interface LayoutProps {
   children: React.ReactNode;

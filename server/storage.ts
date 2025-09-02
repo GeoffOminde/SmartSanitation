@@ -286,11 +286,6 @@ export class DatabaseStorage implements IStorage {
 
   // Routes
   async getRoutes(operatorId?: string, date?: Date): Promise<Route[]> {
-    let query = db
-      .select()
-      .from(routes)
-      .orderBy(desc(routes.scheduledDate));
-
     const conditions = [];
     if (operatorId) {
       conditions.push(eq(routes.operatorId, operatorId));
@@ -299,10 +294,15 @@ export class DatabaseStorage implements IStorage {
       conditions.push(sql`DATE(${routes.scheduledDate}) = DATE(${date})`);
     }
     
+    const query = db
+      .select()
+      .from(routes)
+      .orderBy(desc(routes.scheduledDate));
+      
     if (conditions.length > 0) {
-      query = query.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+      return await query.where(conditions.length === 1 ? conditions[0] : and(...conditions));
     }
-
+    
     return await query;
   }
 

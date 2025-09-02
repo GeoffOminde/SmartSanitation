@@ -318,7 +318,7 @@ export default function RoutesPage() {
                         <div>
                           <span className="text-muted-foreground">Duration:</span>
                           <span className="ml-1 font-medium">
-                            {route.actualDuration ? formatDuration(route.actualDuration) : 'N/A'}
+                            {route.estimatedDuration ? formatDuration(route.estimatedDuration) : 'N/A'}
                           </span>
                         </div>
                       </div>

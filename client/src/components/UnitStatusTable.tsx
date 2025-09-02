@@ -137,7 +137,7 @@ export function UnitStatusTable({ units, onScheduleService, onViewDetails }: Uni
               <tbody className="divide-y divide-border">
                 {filteredUnits.map((unit) => {
                   const fillLevel = unit.latestTelemetry?.fillLevelPct || 0;
-                  const lastUpdate = unit.latestTelemetry?.timestamp || unit.lastSeenAt;
+                  const lastUpdate = unit.latestTelemetry?.timestamp || unit.updatedAt || unit.createdAt;
                   const status = getStatusColor(fillLevel, unit.status);
                   
                   return (

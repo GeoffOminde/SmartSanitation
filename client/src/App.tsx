@@ -11,6 +11,7 @@ import Bookings from "@/pages/bookings";
 import Analytics from "@/pages/analytics";
 import Maintenance from "@/pages/maintenance";
 import NotFound from "@/pages/not-found";
+import { CustomerBookingPortal } from "@/components/CustomerBookingPortal";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
         <Route path="/bookings" component={Bookings} />
         <Route path="/analytics" component={Analytics} />
         <Route path="/maintenance" component={Maintenance} />
+        <Route path="/book" component={CustomerBookingPortal} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
