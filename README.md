@@ -94,43 +94,36 @@ npm run dev
 📈 **Business Model**
 
 SaaS Subscription – Monthly fee per toilet or fleet
-
 Transaction Fee – % of each booking/payment
-
 Premium Analytics – Advanced forecasting & benchmarking
-
 Hardware Bundles – IoT sensor kits with software subscription
+
 
 🌍 **Why East Africa?**
 
 Mobile-first economy – Seamless M-Pesa/Airtel Money integration
-
 High event & construction activity – Predictable demand cycles
-
 Fragmented market – Opportunity to become the “operating system” for sanitation businesses
-
 Regulatory hygiene push – Compliance tools add real value
 
 
 📜 **License**
 
-This project is licensed under the MIT License – see the LICENSE file for details.
+This project is licensed under the MIT License – see the LICENSE file for details
+
 
 🤝 **Contributing**
 
 We welcome contributions!
-
 Fork the repo
-
 Create a feature branch (git checkout -b feature-name)
-
 Commit changes (git commit -m 'Add feature')
-
 Push to branch (git push origin feature-name)
-
 Open a Pull Request
 
 
 📬 **Contact**
 
-Project Lead: Ominde Email: your.email@example.com LinkedIn: Your LinkedIn Website: Your Website
+Project Lead: Ominde
+Email: your.email@example.com
+LinkedIn: Your LinkedIn Website: Your Website
