@@ -64,7 +64,7 @@ It combines **IoT sensors**, **AI analytics**, **mobile money payments**, and **
 ```bash
 git clone https://github.com/yourusername/smart-sanitation-ai.git
 cd smart-sanitation-ai
-
+```
 2. Set Up Environment
 python -m venv venv
 source venv/bin/activate   # Linux/Mac
